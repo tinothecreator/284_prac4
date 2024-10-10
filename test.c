@@ -59,53 +59,53 @@
             printf("GPA: %.2f\n\n", students[i].gpa);
         }
 
-        // printf("Task 3:\n");
+        printf("Task 3:\n");
 
-        // struct StudentNode *head = NULL;
+        struct StudentNode *head = NULL;
 
-        // struct Student *student1 = malloc(sizeof(struct Student));
-        // student1->id = 12345;
-        // strcpy(student1->name, "John Doe");
-        // student1->gpa = 3.75;
+        struct Student *student1 = malloc(sizeof(struct Student));
+        student1->id = 12345;
+        strcpy(student1->name, "John Doe");
+        student1->gpa = 3.75;
 
-        // struct StudentNode *node1 = malloc(sizeof(struct StudentNode));
-        // node1->student = student1;
-        // node1->next = NULL;
-        // head = node1;
+        struct StudentNode *node1 = malloc(sizeof(struct StudentNode));
+        node1->student = student1;
+        node1->next = NULL;
+        head = node1;
 
-        // struct Student *student2 = malloc(sizeof(struct Student));
-        // student2->id = 67890;
-        // strcpy(student2->name, "Jane Smith");
-        // student2->gpa = 3.85;
+        struct Student *student2 = malloc(sizeof(struct Student));
+        student2->id = 67890;
+        strcpy(student2->name, "Jane Smith");
+        student2->gpa = 3.85;
 
-        // struct StudentNode *node2 = malloc(sizeof(struct StudentNode));
-        // node2->student = student2;
-        // node2->next = NULL;
-        // node1->next = node2;
+        struct StudentNode *node2 = malloc(sizeof(struct StudentNode));
+        node2->student = student2;
+        node2->next = NULL;
+        node1->next = node2;
 
-        // char new_list_student_name[] = "Alice Johnson";
-        // float new_list_student_gpa = 3.95;
+        char new_list_student_name[] = "Alice Johnson";
+        float new_list_student_gpa = 3.95;
 
-        // addStudentToList(&head, new_list_student_name, new_list_student_gpa);
+        addStudentToList(&head, new_list_student_name, new_list_student_gpa);
 
-        // struct StudentNode *current = head;
-        // int index = 1;
-        // while (current != NULL) {
-        //     printf("Student %d:\n", index);
-        //     printf("ID: %d\n", current->student->id);
-        //     printf("Name: %s\n", current->student->name);
-        //     printf("GPA: %.2f\n\n", current->student->gpa);
-        //     current = current->next;
-        //     index++;
-        // }
+        struct StudentNode *current = head;
+        int index = 1;
+        while (current != NULL) {
+            printf("Student %d:\n", index);
+            printf("ID: %d\n", current->student->id);
+            printf("Name: %s\n", current->student->name);
+            printf("GPA: %.2f\n\n", current->student->gpa);
+            current = current->next;
+            index++;
+        }
 
-        // current = head;
-        // while (current != NULL) {
-        //     struct StudentNode *next = current->next;
-        //     free(current->student);
-        //     free(current);
-        //     current = next;
-        // }
+        current = head;
+        while (current != NULL) {
+            struct StudentNode *next = current->next;
+            free(current->student);
+            free(current);
+            current = next;
+        }
 
         return 0;
     }
