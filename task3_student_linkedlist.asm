@@ -1,43 +1,56 @@
-; ==========================
-; Group member 01: Name_Surname_student-nr
-; Group member 02: Name_Surname_student-nr
-; Group member 03: Name_Surname_student-nr
-; ==========================
-
 section .data
     debug_msg db "Debug: Added student to list - ID: %d, Name: %s, GPA: %f", 10, 0
+    error_msg db "Error: Memory allocation failed", 10, 0
 
 section .text
 global addStudentToList
 extern malloc
 extern printf
+extern strlen
+extern strncpy
+
+; Function: addStudentToList
+; Parameters:
+;   rdi - pointer to the head of the linked list (StudentNode**)
+;   rsi - pointer to the name of the new student
+;   xmm0 - GPA of the new student
+; Returns: void
 
 addStudentToList:
     push rbp
     mov rbp, rsp
-    sub rsp, 32  ; Allocate stack space for local variables
+    sub rsp, 48  ; Allocate stack space for local variables
 
     ; Save parameters
     mov [rsp], rdi      ; head pointer
     mov [rsp + 8], rsi  ; name pointer
     movss [rsp + 16], xmm0 ; GPA
 
+    ; Check if name is NULL
+    test rsi, rsi
+    jz .error_exit
+
+    ; Get name length
+    mov rdi, rsi
+    call strlen
+    mov [rsp + 24], rax ; Save name length
+
     ; Allocate memory for new StudentNode (16 bytes)
     mov rdi, 16
     call malloc
     test rax, rax
-    jz .allocation_failed
+    jz .error_exit
 
-    mov [rsp + 24], rax ; Save new StudentNode pointer
+    mov [rsp + 32], rax ; Save new StudentNode pointer
 
     ; Allocate memory for new Student (72 bytes)
     mov rdi, 72
     call malloc
     test rax, rax
-    jz .allocation_failed
+    jz .error_exit
 
     ; rax now points to new Student struct
-    mov rdx, [rsp + 24] ; Get StudentNode pointer
+    mov rdx, [rsp + 32] ; Get StudentNode pointer
     mov [rdx], rax      ; Set StudentNode->student
 
     ; Find highest ID and last node
@@ -64,19 +77,19 @@ addStudentToList:
     mov [rax], r13d
 
     ; Set name (next 64 bytes)
+    mov rdi, rax
+    add rdi, 4          ; Destination: name field in struct
     mov rsi, [rsp + 8]  ; Source: name pointer
-    lea rdi, [rax + 4]  ; Destination: name field in struct
-    mov rcx, 63         ; Copy up to 63 characters
-    cld
-    rep movsb
-    mov byte [rdi], 0   ; Null-terminate the string
+    mov rdx, 63         ; Max length to copy
+    call strncpy
+    mov byte [rax + 67], 0 ; Ensure null-termination
 
     ; Set GPA (last 4 bytes)
     movss xmm0, [rsp + 16]
     movss [rax + 68], xmm0
 
     ; Set next pointer to NULL
-    mov rdx, [rsp + 24] ; Get StudentNode pointer
+    mov rdx, [rsp + 32] ; Get StudentNode pointer
     mov qword [rdx + 8], 0
 
     ; Update list
@@ -101,6 +114,14 @@ addStudentToList:
     mov al, 1           ; One floating point argument
     call printf
 
-.allocation_failed:
+    jmp .exit
+
+.error_exit:
+    ; Print error message
+    mov rdi, error_msg
+    xor eax, eax
+    call printf
+
+.exit:
     leave
     ret
